@@ -6,6 +6,49 @@
     * предусмотрите возможность добавления опций к запускаемому процессу через внешний файл (посмотрите, например, на `systemctl cat cron`),
     * удостоверьтесь, что с помощью systemctl процесс корректно стартует, завершается, а после перезагрузки автоматически поднимается.
 
+![exporte](https://user-images.githubusercontent.com/92984527/143206106-d0ef0289-7b67-49dd-af69-e5665fd070b3.png)
+
+unit-файл:
+      
+      `vagrant@vagrant:~$ systemctl cat  node_exporter
+      # /etc/systemd/system/node_exporter.service
+      [Unit]
+      Description=Prometheus Node Exporter
+      Wants=network-online.target
+      After=network-online.target
+   
+      [Service]
+      User=node_exporter
+      Group=node_exporter
+      Type=simple
+      ExecStart=/usr/local/bin/node_exporter
+   
+      [Install]
+      WantedBy=multi-user.target`
+      
+Использование `systemctl`:
+
+      `vagrant@vagrant:~$ ps -e |grep node_exporter
+         621 ?        00:00:01 node_exporter
+      vagrant@vagrant:~$ systemctl stop node_exporter
+      ==== AUTHENTICATING FOR org.freedesktop.systemd1.manage-units ===
+      Authentication is required to stop 'node_exporter.service'.
+      Authenticating as: vagrant,,, (vagrant)
+      Password:
+      ==== AUTHENTICATION COMPLETE ===
+      vagrant@vagrant:~$ ps -e |grep node_exporter
+      vagrant@vagrant:~$ systemctl start node_exporter
+      ==== AUTHENTICATING FOR org.freedesktop.systemd1.manage-units ===
+      Authentication is required to start 'node_exporter.service'.
+      Authenticating as: vagrant,,, (vagrant)
+      Password:
+      ==== AUTHENTICATION COMPLETE ===
+      vagrant@vagrant:~$ ps -e |grep node_exporter
+         1839 ?        00:00:00 node_exporter
+      vagrant@vagrant:~$`
+      
+   Автостарт:
+   ![exporte2](https://user-images.githubusercontent.com/92984527/143207803-2d1e2094-58f0-425f-b403-b08d3dc835de.png)   
 ## 2. Ознакомьтесь с опциями node_exporter и выводом `/metrics` по-умолчанию. Приведите несколько опций, которые вы бы выбрали для базового мониторинга хоста по CPU, памяти, диску и сети.
 ## 3. Установите в свою виртуальную машину [Netdata](https://github.com/netdata/netdata). Воспользуйтесь [готовыми пакетами](https://packagecloud.io/netdata/netdata/install) для установки (`sudo apt install -y netdata`). После успешной установки:
     * в конфигурационном файле `/etc/netdata/netdata.conf` в секции [web] замените значение с localhost на `bind to = 0.0.0.0`,
