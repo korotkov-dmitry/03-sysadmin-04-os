@@ -52,6 +52,7 @@ unit-файл:
 ## 2. Ознакомьтесь с опциями node_exporter и выводом `/metrics` по-умолчанию. Приведите несколько опций, которые вы бы выбрали для базового мониторинга хоста по CPU, памяти, диску и сети.
 
 CPU
+
       `node_cpu_seconds_total{cpu="0",mode="idle"} 5026.45
       node_cpu_seconds_total{cpu="0",mode="system"} 8.13
       node_cpu_seconds_total{cpu="0",mode="user"} 4.84
@@ -61,6 +62,7 @@ CPU
       process_cpu_seconds_total 0.58`
       
 Memory
+
       `node_memory_MemTotal_bytes 1.028694016e+09
       node_memory_MemFree_bytes 5.68066048e+08
       node_memory_MemAvailable_bytes 7.6163072e+08
@@ -68,6 +70,7 @@ Memory
       node_memory_Cached_bytes 2.90205696e+08`
       
 Disk
+
       `node_disk_io_time_seconds_total{device="sda"} 12.012
       node_disk_read_bytes_total{device="sda"} 3.16904448e+08
       node_disk_read_time_seconds_total{device="sda"} 7.303
@@ -75,6 +78,7 @@ Disk
       node_disk_write_time_seconds_total{device="sda"} 7.746`
       
 Network
+
       `node_network_receive_bytes_total{device="eth0"} 545686
       node_network_receive_errs_total{device="eth0"} 0
       node_network_transmit_bytes_total{device="eth0"} 434942
