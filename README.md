@@ -50,6 +50,36 @@ unit-файл:
    Автостарт:
    ![exporte2](https://user-images.githubusercontent.com/92984527/143207803-2d1e2094-58f0-425f-b403-b08d3dc835de.png)   
 ## 2. Ознакомьтесь с опциями node_exporter и выводом `/metrics` по-умолчанию. Приведите несколько опций, которые вы бы выбрали для базового мониторинга хоста по CPU, памяти, диску и сети.
+
+CPU
+      `node_cpu_seconds_total{cpu="0",mode="idle"} 5026.45
+      node_cpu_seconds_total{cpu="0",mode="system"} 8.13
+      node_cpu_seconds_total{cpu="0",mode="user"} 4.84
+      node_cpu_seconds_total{cpu="1",mode="idle"} 5025.01
+      node_cpu_seconds_total{cpu="1",mode="system"} 13.46
+      node_cpu_seconds_total{cpu="1",mode="user"} 1.61
+      process_cpu_seconds_total 0.58`
+      
+Memory
+      `node_memory_MemTotal_bytes 1.028694016e+09
+      node_memory_MemFree_bytes 5.68066048e+08
+      node_memory_MemAvailable_bytes 7.6163072e+08
+      node_memory_Buffers_bytes 2.3498752e+07
+      node_memory_Cached_bytes 2.90205696e+08`
+      
+Disk
+      `node_disk_io_time_seconds_total{device="sda"} 12.012
+      node_disk_read_bytes_total{device="sda"} 3.16904448e+08
+      node_disk_read_time_seconds_total{device="sda"} 7.303
+      node_disk_written_bytes_total{device="sda"} 7.4236928e+07
+      node_disk_write_time_seconds_total{device="sda"} 7.746`
+      
+Network
+      `node_network_receive_bytes_total{device="eth0"} 545686
+      node_network_receive_errs_total{device="eth0"} 0
+      node_network_transmit_bytes_total{device="eth0"} 434942
+      node_network_transmit_errs_total{device="eth0"} 0`
+
 ## 3. Установите в свою виртуальную машину [Netdata](https://github.com/netdata/netdata). Воспользуйтесь [готовыми пакетами](https://packagecloud.io/netdata/netdata/install) для установки (`sudo apt install -y netdata`). После успешной установки:
     * в конфигурационном файле `/etc/netdata/netdata.conf` в секции [web] замените значение с localhost на `bind to = 0.0.0.0`,
     * добавьте в Vagrantfile проброс порта Netdata на свой локальный компьютер и сделайте `vagrant reload`:
