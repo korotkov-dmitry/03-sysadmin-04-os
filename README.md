@@ -132,4 +132,28 @@ Network
       1024`
       
 ## 6. Запустите любой долгоживущий процесс (не `ls`, который отработает мгновенно, а, например, `sleep 1h`) в отдельном неймспейсе процессов; покажите, что ваш процесс работает под PID 1 через `nsenter`. Для простоты работайте в данном задании под root (`sudo -i`). Под обычным пользователем требуются дополнительные опции (`--map-root-user`) и т.д.
+      `pts/1`
+      
+      `vagrant@vagrant:~$ sudo unshare -f --pid --mount-proc /bin/bash
+      root@vagrant:/home/vagrant# ps aux
+      USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+      root           1  0.0  0.3   9836  3912 pts/1    S    05:32   0:00 /bin/bash
+      root           8  0.0  0.3  11492  3436 pts/1    R+   05:33   0:00 ps aux
+      root@vagrant:/home/vagrant# sleep 1h`
+      
+      `pts/0`
+      
+      `vagrant@vagrant:~$ ps aux
+      ...
+      root        1696  0.0  0.4   9836  4020 pts/1    S    05:32   0:00 /bin/bash
+      root        1704  0.0  0.0   8076   596 pts/1    S+   05:33   0:00 sleep 1h
+      vagrant     1727  0.0  0.3  11492  3320 pts/0    R+   05:35   0:00 ps aux
+      vagrant@vagrant:~$ sudo nsenter --target 1704 --pid --mount
+      root@vagrant:/# ps aux
+      USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+      root           1  0.0  0.4   9836  4020 pts/1    S    05:32   0:00 /bin/bash
+      root           9  0.0  0.0   8076   596 pts/1    S+   05:33   0:00 sleep 1h
+      root          21  0.0  0.4   9836  4116 pts/0    S    05:35   0:00 -bash
+      root          30  0.0  0.3  11492  3512 pts/0    R+   05:35   0:00 ps aux
+      root@vagrant:/#`
 ## 7. Найдите информацию о том, что такое `:(){ :|:& };:`. Запустите эту команду в своей виртуальной машине Vagrant с Ubuntu 20.04 (**это важно, поведение в других ОС не проверялось**). Некоторое время все будет "плохо", после чего (минуты) – ОС должна стабилизироваться. Вызов `dmesg` расскажет, какой механизм помог автоматической стабилизации. Как настроен этот механизм по-умолчанию, и как изменить число процессов, которое можно создать в сессии?
