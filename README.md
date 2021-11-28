@@ -89,12 +89,47 @@ Network
     * добавьте в Vagrantfile проброс порта Netdata на свой локальный компьютер и сделайте `vagrant reload`:
 
     ```bash
-    config.vm.network "forwarded_port", guest: 19999, host: 19999
-    ```
+    config.vm.network "forwarded_port", guest: 19999, host: 19999```
+
 
     После успешной перезагрузки в браузере *на своем ПК* (не в виртуальной машине) вы должны суметь зайти на `localhost:19999`. Ознакомьтесь с метриками, которые по умолчанию собираются Netdata и с комментариями, которые даны к этим метрикам.
 
+Результат
+
+      `vagrant@vagrant:~$ sudo ss -pnltu | grep 19999
+      tcp    LISTEN   0        4096              0.0.0.0:19999          0.0.0.0:*      users:(("netdata",pid=781,fd=4))                                       
+      vagrant@vagrant:~$ sudo lsof -i :19999
+      COMMAND PID    USER   FD   TYPE DEVICE SIZE/OFF NODE NAME
+      netdata 781 netdata    4u  IPv4  24689      0t0  TCP *:19999 (LISTEN)
+      netdata 781 netdata   52u  IPv4  30887      0t0  TCP vagrant:19999->_gateway:56143 (ESTABLISHED)
+      vagrant@vagrant:~$`
+      
+![netdata](https://user-images.githubusercontent.com/92984527/143730020-4805e999-0c8d-4d5f-840b-ab93b24cdb59.png)
+
 ## 4. Можно ли по выводу `dmesg` понять, осознает ли ОС, что загружена не на настоящем оборудовании, а на системе виртуализации?
+      `vagrant@vagrant:~$ dmesg |grep virtual
+      [    0.005445] CPU MTRRs all blank - virtualized system.
+      [    0.044650] Booting paravirtualized kernel on KVM
+      [ 4609.048932] systemd[1]: Detected virtualization oracle.`
+      
+`KVM (Kernel-based Virtual Machine)` - программное решение, обеспечивающее виртуализацию в среде Linux.
+
+`Detected virtualization oracle` - определение системы виртуализации.
 ## 5. Как настроен sysctl `fs.nr_open` на системе по-умолчанию? Узнайте, что означает этот параметр. Какой другой существующий лимит не позволит достичь такого числа (`ulimit --help`)?
+`fs.nr_open` - лимит на количество открытых дескрипторов
+      
+`vagrant@vagrant:~$ sysctl -n fs.nr_open
+      1048576`
+      
+`vagrant@vagrant:~$ ulimit -n` - максимальное количество открытых файловых дескрипторов (большинство систем не позволяет устанавливать это значение)
+
+`vagrant@vagrant:~$ ulimit -Hn` - жесткое ограничение после установки превосходить нельзя;
+      `vagrant@vagrant:~$ ulimit -Sn` - мягкое ограничение можно превосходить вплоть до значения соответствующего жесткого ограничения.
+
+      `vagrant@vagrant:~$ ulimit -Hn
+      1048576
+      vagrant@vagrant:~$ ulimit -Sn
+      1024`
+      
 ## 6. Запустите любой долгоживущий процесс (не `ls`, который отработает мгновенно, а, например, `sleep 1h`) в отдельном неймспейсе процессов; покажите, что ваш процесс работает под PID 1 через `nsenter`. Для простоты работайте в данном задании под root (`sudo -i`). Под обычным пользователем требуются дополнительные опции (`--map-root-user`) и т.д.
 ## 7. Найдите информацию о том, что такое `:(){ :|:& };:`. Запустите эту команду в своей виртуальной машине Vagrant с Ubuntu 20.04 (**это важно, поведение в других ОС не проверялось**). Некоторое время все будет "плохо", после чего (минуты) – ОС должна стабилизироваться. Вызов `dmesg` расскажет, какой механизм помог автоматической стабилизации. Как настроен этот механизм по-умолчанию, и как изменить число процессов, которое можно создать в сессии?
