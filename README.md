@@ -132,7 +132,7 @@ Network
       1024`
       
 ## 6. Запустите любой долгоживущий процесс (не `ls`, который отработает мгновенно, а, например, `sleep 1h`) в отдельном неймспейсе процессов; покажите, что ваш процесс работает под PID 1 через `nsenter`. Для простоты работайте в данном задании под root (`sudo -i`). Под обычным пользователем требуются дополнительные опции (`--map-root-user`) и т.д.
-      `pts/1`
+`pts/1`
       
       `vagrant@vagrant:~$ sudo unshare -f --pid --mount-proc /bin/bash
       root@vagrant:/home/vagrant# ps aux
@@ -141,7 +141,7 @@ Network
       root           8  0.0  0.3  11492  3436 pts/1    R+   05:33   0:00 ps aux
       root@vagrant:/home/vagrant# sleep 1h`
       
-      `pts/0`
+`pts/0`
       
       `vagrant@vagrant:~$ ps aux
       ...
@@ -157,3 +157,29 @@ Network
       root          30  0.0  0.3  11492  3512 pts/0    R+   05:35   0:00 ps aux
       root@vagrant:/#`
 ## 7. Найдите информацию о том, что такое `:(){ :|:& };:`. Запустите эту команду в своей виртуальной машине Vagrant с Ubuntu 20.04 (**это важно, поведение в других ОС не проверялось**). Некоторое время все будет "плохо", после чего (минуты) – ОС должна стабилизироваться. Вызов `dmesg` расскажет, какой механизм помог автоматической стабилизации. Как настроен этот механизм по-умолчанию, и как изменить число процессов, которое можно создать в сессии?
+      `:()
+      {
+          :|:&
+      };
+      :`
+
+Определяет функцию с именем `:`, которая запускает саму себя дважды и каждый процесс запускает еще два.
+
+![image](https://user-images.githubusercontent.com/92984527/143731170-950970f6-473d-4ead-899c-aaf7f6c7e175.png)
+
+      `vagrant@vagrant:~$ dmesg -T
+      ...
+      [Sun Nov 28 05:40:53 2021] cgroup: fork rejected by pids controller in /user.slice/user-1000.slice/session-3.scope
+      [Sun Nov 28 05:42:09 2021] rcu: INFO: rcu_sched self-detected stall on CPU
+      [Sun Nov 28 05:42:09 2021] rcu:         0-...!: (1 GPs behind) idle=03e/1/0x4000000000000002 softirq=60984/60986 fqs=0
+      [Sun Nov 28 05:42:09 2021]      (t=18515 jiffies g=91213 q=177)
+      [Sun Nov 28 05:42:09 2021] rcu: rcu_sched kthread starved for 18515 jiffies! g91213 f0x0 RCU_GP_WAIT_FQS(5) ->state=0x0 ->cpu=1
+      [Sun Nov 28 05:42:09 2021] rcu: RCU grace-period kthread stack dump:
+      [Sun Nov 28 05:42:09 2021] rcu_sched       R  running task        0    10      2 0x80004000
+      ...`
+      
+Настройка числа процессов:
+      `vagrant@vagrant:~$ ulimit -u
+      3571
+      vagrant@vagrant:~$ ulimit -u 50`
+      
