@@ -178,7 +178,7 @@ Network
       [Sun Nov 28 05:42:09 2021] rcu_sched       R  running task        0    10      2 0x80004000
       ...`
       
-Настройка числа процессов:
+      Настройка числа процессов:
       `vagrant@vagrant:~$ ulimit -u
       3571
       vagrant@vagrant:~$ ulimit -u 50`
