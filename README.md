@@ -49,6 +49,47 @@ unit-файл:
       
    Автостарт:
    ![exporte2](https://user-images.githubusercontent.com/92984527/143207803-2d1e2094-58f0-425f-b403-b08d3dc835de.png)   
+   
+   **Дополнение**
+   
+   Установка параметров:
+   
+      `vagrant@vagrant:/$ sudo vim /opt/myservice
+      [Service]
+      MY_OPTIONS='--itsmy'`
+            
+      `vagrant@vagrant:/$ sudo vim /etc/systemd/system/node_exporter.service
+      [Unit]
+      Description=Prometheus Node Exporter
+      Wants=network-online.target
+      After=network-online.target
+
+      [Service]
+      EnvironmentFile=/opt/myservice
+      User=node_exporter
+      Group=node_exporter
+      Type=simple
+      ExecStart=/usr/local/bin/node_exporter
+
+      [Install]
+      WantedBy=multi-user.target`
+      
+Запуск: 
+
+      `vagrant@vagrant:/$ sudo systemctl daemon-reload
+      vagrant@vagrant:/$ sudo systemctl restart node_exporter
+      vagrant@vagrant:/$ sudo systemctl status node_exporter
+      ● node_exporter.service - Prometheus Node Exporter
+      Loaded: loaded (/etc/systemd/system/node_exporter.service; enabled; vendor preset: enabled)
+      Active: active (running) since Tue 2021-11-30 03:42:12 UTC; 3s ago
+      Main PID: 14973 (node_exporter)
+      Tasks: 4 (limit: 1071)
+      Memory: 2.2M
+      CGroup: /system.slice/node_exporter.service
+             └─14973 /usr/local/bin/node_exporter
+      ...
+      vagrant@vagrant:/$ sudo cat /proc/14973/environ
+      LANG=en_US.UTF-8LANGUAGE=en_US:PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/binHOME=/home/node_exporterLOGNAME=node_exporterUSER=node_exporterINVOCATION_ID=8ec0c2a2989341549c59f700eed04924JOURNAL_STREAM=9:62130MY_OPTIONS=--itsmy`
 ## 2. Ознакомьтесь с опциями node_exporter и выводом `/metrics` по-умолчанию. Приведите несколько опций, которые вы бы выбрали для базового мониторинга хоста по CPU, памяти, диску и сети.
 
 CPU
