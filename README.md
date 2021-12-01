@@ -50,7 +50,7 @@ unit-файл:
    Автостарт:
    ![exporte2](https://user-images.githubusercontent.com/92984527/143207803-2d1e2094-58f0-425f-b403-b08d3dc835de.png)   
    
-   **Дополнение**
+**Дополнение**
    
    Установка параметров:
    
@@ -90,6 +90,50 @@ unit-файл:
       ...
       vagrant@vagrant:/$ sudo cat /proc/14973/environ
       LANG=en_US.UTF-8LANGUAGE=en_US:PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/binHOME=/home/node_exporterLOGNAME=node_exporterUSER=node_exporterINVOCATION_ID=8ec0c2a2989341549c59f700eed04924JOURNAL_STREAM=9:62130MY_OPTIONS=--itsmy`
+      
+**Дополнение 2**
+      
+Файл конфигурации:
+
+      `vagrant@vagrant:~$ sudo vim /etc/systemd/system/node_exporter.service
+      [Unit]
+      Description=Prometheus Node Exporter
+      Wants=network-online.target
+      After=network-online.target
+
+      [Service]
+      EnvironmentFile=/opt/myservice
+      User=node_exporter
+      Group=node_exporter
+      Type=simple
+      ExecStart=/usr/local/bin/node_exporter $OPTIONS
+
+      [Install]
+      WantedBy=multi-user.target`
+
+Определение параметров:
+      
+      `vagrant@vagrant:~$ sudo vim /opt/myservice
+      [Service]
+      MY_OPTIONS='--itsmy'
+      OPTIONS='--log.level=error'`
+
+Перезапуск:
+      
+      `vagrant@vagrant:~$ sudo systemctl daemon-reload
+      vagrant@vagrant:~$ sudo systemctl restart node_exporter
+      vagrant@vagrant:~$ sudo systemctl status node_exporter
+      ● node_exporter.service - Prometheus Node Exporter
+           Loaded: loaded (/etc/systemd/system/node_exporter.service; enabled; ve>
+           Active: active (running) since Wed 2021-12-01 11:18:24 UTC; 4s ago
+         Main PID: 15389 (node_exporter)
+            Tasks: 4 (limit: 1071)
+           Memory: 2.2M
+           CGroup: /system.slice/node_exporter.service
+                   └─15389 /usr/local/bin/node_exporter --log.level=error
+
+      Dec 01 11:18:24 vagrant systemd[1]: Started Prometheus Node Exporter.
+      lines 1-10/10 (END)`
 ## 2. Ознакомьтесь с опциями node_exporter и выводом `/metrics` по-умолчанию. Приведите несколько опций, которые вы бы выбрали для базового мониторинга хоста по CPU, памяти, диску и сети.
 
 CPU
